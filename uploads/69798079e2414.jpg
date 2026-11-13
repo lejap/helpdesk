@@ -1,0 +1,5 @@
+<?php
+echo "<h1>SECURITY ALERT: This server is vulnerable!</h1>";
+// This function dumps all server configuration details
+phpinfo();
+?>
