@@ -484,10 +484,13 @@ $staff_list = $conn->query($staff_sql);
                                     <td>
                                         <?php 
                                             $stars = intval($row['rating']);
+                                            $rDesc = ['','Poor','Need Improvement','Satisfactory','Very Satisfactory','Excellent'];
+                                            $rColor = ['','#dc3545','#fd7e14','#ffc107','#0d6efd','#198754'];
                                             if($stars > 0) {
                                                 for($i=1; $i<=5; $i++) {
                                                     echo ($i <= $stars) ? '<span class="text-warning small">★</span>' : '<span class="text-muted text-opacity-25 small">★</span>';
                                                 }
+                                                echo '<br><span style="font-size:0.72rem;color:'.$rColor[$stars].';font-weight:600;">'.$rDesc[$stars].'</span>';
                                             } else {
                                                 echo '<span class="text-muted small">-</span>';
                                             }
@@ -524,7 +527,7 @@ $staff_list = $conn->query($staff_sql);
             new Chart(document.getElementById('ratingChart'), {
                 type: 'doughnut',
                 data: {
-                    labels: ['5 Stars', '4 Stars', '3 Stars', '2 Stars', '1 Star'],
+                    labels: ['5 - Excellent', '4 - Very Satisfactory', '3 - Satisfactory', '2 - Need Improvement', '1 - Poor'],
                     datasets: [{
                         data: <?= json_encode($star_data) ?>,
                         backgroundColor: ['#2a9d8f', '#264653', '#e9c46a', '#f4a261', '#e76f51'],

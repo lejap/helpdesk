@@ -225,10 +225,17 @@ switch($ticket['status']) {
                         </div>
                     <?php endif; ?>
 
-                     <?php if($ticket['status'] == 'Closed'): ?>
+                     <?php if($ticket['status'] == 'Closed'): 
+                        $r = intval($ticket['rating']);
+                        $rDesc = ['','Poor (≤ 60%)','Need Improvement (61%-70%)','Satisfactory (71%-80%)','Very Satisfactory (81%-90%)','Excellent (91%-100%)'];
+                        $rColor = ['','#dc3545','#fd7e14','#ffc107','#0d6efd','#198754'];
+                    ?>
                         <div class="alert alert-info mt-3">
                             <strong>User Feedback:</strong> <?= htmlspecialchars($ticket['feedback']) ?> <br>
-                            <strong class="text-warning" style="font-size: 1.2rem;"><?= str_repeat("★", $ticket['rating']) . str_repeat("☆", 5 - $ticket['rating']) ?></strong>
+                            <strong class="text-warning" style="font-size: 1.2rem;"><?= str_repeat("★", $r) . str_repeat("☆", 5 - $r) ?></strong>
+                            <?php if($r > 0): ?>
+                            <span class="ms-2 fw-semibold" style="color:<?= $rColor[$r] ?>; font-size:0.9rem;"><?= $rDesc[$r] ?></span>
+                            <?php endif; ?>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -387,12 +394,13 @@ switch($ticket['status']) {
                 <div class="modal-body text-center">
                     <p class="mb-3">Please rate the service provided:</p>
                     <div class="star-rating mb-3">
-                        <input type="radio" id="star5" name="rating" value="5" required><label for="star5" title="Excellent">★</label>
-                        <input type="radio" id="star4" name="rating" value="4"><label for="star4" title="Good">★</label>
-                        <input type="radio" id="star3" name="rating" value="3"><label for="star3" title="Average">★</label>
-                        <input type="radio" id="star2" name="rating" value="2"><label for="star2" title="Poor">★</label>
-                        <input type="radio" id="star1" name="rating" value="1"><label for="star1" title="Terrible">★</label>
+                        <input type="radio" id="star5" name="rating" value="5" required><label for="star5" title="Excellent (91% - 100%)">★</label>
+                        <input type="radio" id="star4" name="rating" value="4"><label for="star4" title="Very Satisfactory (81% - 90%)">★</label>
+                        <input type="radio" id="star3" name="rating" value="3"><label for="star3" title="Satisfactory (71% - 80%)">★</label>
+                        <input type="radio" id="star2" name="rating" value="2"><label for="star2" title="Need Improvement (61% - 70%)">★</label>
+                        <input type="radio" id="star1" name="rating" value="1"><label for="star1" title="Poor (≤ 60%)">★</label>
                     </div>
+                    <div id="ratingLabel" class="mb-2 fw-bold text-center" style="font-size:0.95rem; min-height:1.5em;"></div>
                     <textarea name="feedback" class="form-control" placeholder="Write your feedback here..." rows="3" required></textarea>
                 </div>
                 <div class="modal-footer"><button type="submit" name="confirm_resolution" class="btn btn-success w-100">Submit Review & Close Ticket</button></div>
@@ -430,6 +438,25 @@ switch($ticket['status']) {
         });
     });
     if (window.history.replaceState) { window.history.replaceState(null, null, window.location.href); }
+
+    // Show rating description label when a star is selected
+    const ratingLabels = {
+        1: '⭕ Poor (≤ 60% of Target)',
+        2: '🔶 Need Improvement (61% - 70% of Target)',
+        3: '🔷 Satisfactory (71% - 80% of Target)',
+        4: '🟢 Very Satisfactory (81% - 90% of Target)',
+        5: '⭐ Excellent (91% - 100% of Target)'
+    };
+    const ratingColors = { 1:'#dc3545', 2:'#fd7e14', 3:'#ffc107', 4:'#0d6efd', 5:'#198754' };
+    document.querySelectorAll('input[name="rating"]').forEach(function(input) {
+        input.addEventListener('change', function() {
+            var lbl = document.getElementById('ratingLabel');
+            if(lbl) {
+                lbl.textContent = ratingLabels[this.value] || '';
+                lbl.style.color = ratingColors[this.value] || '#333';
+            }
+        });
+    });
 </script>
 
 <?php require 'includes/footer.php'; ?>
